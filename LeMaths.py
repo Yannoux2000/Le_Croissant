@@ -1,3 +1,5 @@
+#This code is the same in Le_Croissant and Le_Baguette
+
 import numpy as np
 
 URotationToRadians = np.pi / float(32768)
@@ -81,6 +83,7 @@ class Vector3:
 	def correction2d_to(self, ideal):
 		return Rad_clip(ideal.yaw - self.yaw)
 
+#Convertions to objects
 def Vectorize_Np(array):
 	return Vector3(array[0],array[1],array[2])
 
@@ -93,6 +96,7 @@ def Vectorize_Vel(entity):
 def Vectorize_Avl(entity):
 	return Vector3(entity.AngularVelocity.X,entity.AngularVelocity.Y,entity.AngularVelocity.Z)
 
+
 	#Extract Car entity from the GTP, as an easier object to manipulate
 def Get_car(GTP, index):
 	return GTP.gamecars[index]
@@ -100,7 +104,7 @@ def Get_car(GTP, index):
 class Car():
 	def __init__(self, car_entity):
 		
-		self.ent = car_entity
+		self.ent = car_entity #Keep other data
 
 		self.pitch = float(car_entity.Rotation.Pitch) * URotationToRadians
 		self.yaw = float(car_entity.Rotation.Yaw) * URotationToRadians
@@ -230,6 +234,7 @@ def Car_Left(car):
 	#double check normilizations of vectors
 	return Vector3(facing_x, facing_y, facing_z).normalize()
 
+#retrieve transformation matrix from car info.
 def Car_TMat(car):
 	return Get_TMat(Car_Forward(car), Car_Left(car), Vectorize_Loc(car))
 
@@ -248,6 +253,7 @@ def Get_TMat(f, l, t):
 	#This matrix convert from local to global
 	return np.concatenate((f.np(0), l.np(0), u.np(0), t.np(1)), axis=1)
 
+#using matrix algorithms to find local and global coords
 def to_local(car, vec):
 	#Inverted from the local to global matrix generated
 	matM = np.linalg.inv(Car_TMat(car))
@@ -262,6 +268,7 @@ def to_global(car, vec):
 
 	return outvec
 
+#Copied from discord not used.
 def predict(pos, vel, time=5, timestep=0.0166):
 	path = [pos]
 	vel_path = [vel]

@@ -6,19 +6,20 @@ from quicktracer import trace
 
 DODGE_TIME = 0.3
 FDASH_ACT_TIME = 0.5
-
-STEP_T = 5
+step_forward = 5
 
 #LECROISSANT IS HARDCODED
 
 class Agent:
-	def __init__(self, name, team, index):
+	def __init__(self, name, team, index, bot_parameters=None):
 		self.name = name
 		self.team = team  # 0 towards positive goal, 1 towards negative goal.
 		self.index = index
+		self.config_file = bot_parameters
 
 		self.debug = True if index==0 else False
 
+		#Bot's states, instead of having self.var all around here, it is kept in a dictionnary
 		self.state = {'FDashStep' : 0, 'FDashTime' : 0, 'FDashToken' : 0, 'Gradient' : 1, 'PrevAngle' : 0, 'Target' : None}
 		self.reset_output()
 
@@ -38,12 +39,18 @@ class Agent:
 
 		self.state['Target'] = self.HomeBA
 
-		self.roll_t = [0] * STEP_T
-		self.yaw_t = [0] * STEP_T
-		self.pitch_t = [0] * STEP_T
+		self.roll_t = [0] * step_forward
+		self.yaw_t = [0] * step_forward
+		self.pitch_t = [0] * step_forward
 
 		# self.car_dirm1 = Vector3()
 		print("Done Loading {},\tReady to Go !".format(self.name))
+
+		#retrieve parameters from the bot_parameters data, editable in LeCroissant.cfg
+	def load_config_file(self):
+		if self.config_file is None:
+			return
+		# read file code here
 
 	def reset_output(self):
 
