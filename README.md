@@ -35,4 +35,4 @@ Conciderer checking out the RLBot repository, to fully understand the designing 
 + [RLBot](https://github.com/RLBot/RLBot).
 + [Wikipedia's source of inspiration](https://en.wikipedia.org/wiki/Croissant);
 
-~~Thoses names used for thoses two bots, Le Baguette and Le Croissant, are used in a non-serious, non-xenophobic intent, but simply as a silly joke. Anyone being offended by the uses of theses words in this, or any context, should relax and by a Chocolatine.~~
+__Thoses names used for thoses two bots, Le Baguette and Le Croissant, are used in a non-serious, non-xenophobic intent, but simply as a silly joke. Anyone being offended by the uses of theses words in this, or any context, should relax and by a Chocolatine.__
