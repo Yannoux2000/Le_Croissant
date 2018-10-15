@@ -1,8 +1,8 @@
-# Le Croissant (Par of the Boulangerie Bot Family)
+# Le Croissant (Part of the Boulangerie Bot Family)
 
 Welcome to Le Croissant's Repo, one of the few bots in the RLBot Community, that represente his origin country (Kinda). This bot is part of the bot family : Le Boulangerie, twin of [Le Baguette](https://github.com/inXS212/Le_Baguette). Le Croissant is **HARD-CODED** meaning it is not using any algorithm that would provoque emergent behaviours on purpose.
 
-# Instalation and use
+# Installation and use
 
 To install and run Le Croissant, you will need :
 
