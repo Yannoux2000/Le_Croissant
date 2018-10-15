@@ -28,6 +28,10 @@ Conciderer checking out the RLBot repository, to fully understand the designing 
 	+ faking first shot.
 	+ ...
 
+# RLBot :
+
+[![Video](https://github.com/RLBot/RLBot/blob/master/images/RLBot.png)](https://github.com/RLBot/RLBot)
+
 # Annexes :
 
 + [Le Baguette's Repo](https://github.com/inXS212/Le_Baguette).
@@ -35,4 +39,4 @@ Conciderer checking out the RLBot repository, to fully understand the designing 
 + [RLBot](https://github.com/RLBot/RLBot).
 + [Wikipedia's source of inspiration](https://en.wikipedia.org/wiki/Croissant);
 
-__Thoses names used for thoses two bots, Le Baguette and Le Croissant, are used in a non-serious, non-xenophobic intent, but simply as a silly joke. Anyone being offended by the uses of theses words in this, or any context, should relax and by a Chocolatine.__
+_Thoses names used for thoses two bots, Le Baguette and Le Croissant, are used in a non-serious, non-xenophobic intent, but simply as a silly joke. Anyone being offended by the uses of theses words in this, or any context, should relax and by a Chocolatine._
