@@ -96,21 +96,25 @@ print(ConstVec.get('Boost_Center_L', 1))
 print(ConstVec.get('Boost_Center_R', 0))
 print(ConstVec.get('Boost_Center_R', 1))
 
-asserter(Vec3(),Obj().loc,"Obj init")
+asserter(Vec3(),Target().loc,"Target init")
+asserter(Vec3(),Target(Vec3()).loc,"Target init")
 
 bma = BallMetaArea()
 
 print(ConstVec.get('Goal_L', 1))
 print(ConstVec.get('Goal_R', 1))
 
-ball = Vec3([0,0,0])
+ball = Ball(Vec3([0,0,0]))
 
-a = - (ConstVec.get('Goal_L', 1) - ball)
-b = - (ConstVec.get('Goal_R', 1) - ball)
+a = - ball.to(ConstVec.get('Goal_L', 1))
+b = - ball.to(ConstVec.get('Goal_R', 1))
+
 print()
 print(a)
 print(b)
 
+ball.rot = Vec3()
+ball.rot_to_mat()
 bma.update(ball, 1)
 
 asserter(False	,bma.inShotZone(Vec3([-893,-5119,-321.39]))	, "Area")
@@ -132,11 +136,13 @@ asserter(False	,bma.inShotZone(Vec3([894,-5120,-321.39]))	, "Area")
 asserter(False	,bma.inShotZone(Vec3([894,-5120, 321.39]))	, "Area")
 
 
-ball = Vec3([-500,-3000,0])
+ball = Ball(Vec3([-500,-3000,0]))
 
-a = ConstVec.get('Home_L', 1)
-b = ConstVec.get('Home_R', 1)
+a = - ball.to(ConstVec.get('Home_L', 1))
+b = - ball.to(ConstVec.get('Home_R', 1))
 
+ball.rot = Vec3()
+ball.rot_to_mat()
 bma.update(ball, 1)
 
 asserter(False	,bma.inShotZone(Vec3([a[0],a[1]+1,a[2]]))	, "Area")
@@ -148,5 +154,3 @@ asserter(False	,bma.inShotZone(Vec3([b[0],b[1]+1,b[2]]))	, "Area")
 asserter(True	,bma.inShotZone(Vec3([b[0],b[1]-1,b[2]]))	, "Area")
 asserter(True	,bma.inShotZone(Vec3([b[0]-1,b[1],b[2]]))	, "Area")
 asserter(False	,bma.inShotZone(Vec3([b[0]+1,b[1],b[2]]))	, "Area")
-
-from LeCroissant2 import *

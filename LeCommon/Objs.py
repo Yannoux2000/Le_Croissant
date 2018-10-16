@@ -2,14 +2,63 @@ import numpy as np
 import math
 from LeCommon.Vector import *
 
-class Obj:
-	def __init__(self):
-		self.loc = Vec3()
+def Target_A(vec = [], team = 0):
+	return Target(Vec3(vec) * (team*(-2) + 1))
+
+class Target:
+	def __init__(self, vec):
+		self.loc = vec
+		self.local_loc = Vec3()
+
+	def distance(self, other):
+		return self.loc.distance(other.loc)
+		
+	def to(self, t_loc):
+		return t_loc - self.loc
+
+class Path():
+	def __init__(self, path):
+		self.path = path
+		self.i = 0
+		self.begin = 0
+		self.end = len(self.path) - 1
+
+	def flip(self):
+		self.path.reverse()
+
+	def next(self):
+		self.i += 1
+		if self.i >= len(self.path):
+			self.i = self.begin
+
+	def go(self):
+		return self.path[self.i]
+
+	def then(self):
+		if self.i<self.end:
+			return self.path[self.i]
+		else:
+			return None
+
+	def snap(self, loc, near_skip=True):
+
+		for i in range(len(self.path)):
+			d = self.path[i].distance(loc)
+
+			if d < self.go().distance(loc):
+				self.i = i
+
+		if near_skip: #aim at the next right away
+			self.next()
+
+class Obj(Target):
+	def __init__(self, vec = Vec3()):
+		super(Obj,self).__init__(vec)
 		self.vel = Vec3()
 		self.rot = Vec3()
 		self.ang = Vec3()
 
-		self.local_loc = Vec3()
+		self.matrix = []
 
 	def process(self, physics):
 		self.Obj_process(physics)
@@ -19,15 +68,6 @@ class Obj:
 		self.vel.vec = [physics.velocity.x,physics.velocity.y,physics.velocity.z]
 		self.rot.vec = [physics.rotation.roll,physics.rotation.pitch,physics.rotation.yaw]
 		self.ang.vec = [physics.angular_velocity.x,physics.angular_velocity.y,physics.angular_velocity.z]
-
-	def distance(self, other):
-		return self.loc.distance(other.loc)
-
-	def to_local(self, other):
-		x = (other.loc - self.loc).dot(self.matrix[0])
-		y = (other.loc - self.loc).dot(self.matrix[1])
-		z = (other.loc - self.loc).dot(self.matrix[2])
-		return Vec3([x,y,z])
 
 	def rot_to_mat(self):
 		CR = math.cos(self.rot[0])
@@ -39,36 +79,41 @@ class Obj:
 		CY = math.cos(self.rot[2])
 		SY = math.sin(self.rot[2])
 
-		matrix = []
-		matrix.append(Vec3([CP*CY, CP*SY, SP]))
-		matrix.append(Vec3([CY*SP*SR-CR*SY, SY*SP*SR+CR*CY, -CP * SR]))
-		matrix.append(Vec3([-CR*CY*SP-SR*SY, -CR*SY*SP+SR*CY, CP*CR]))
-		return matrix
+		self.matrix = []
+		self.matrix.append(Vec3([CP*CY, CP*SY, SP]))
+		self.matrix.append(Vec3([CY*SP*SR-CR*SY, SY*SP*SR+CR*CY, -CP * SR]))
+		self.matrix.append(Vec3([-CR*CY*SP-SR*SY, -CR*SY*SP+SR*CY, CP*CR]))
+		return self.matrix
+
+	def to_local(self, other):
+		vec = other.loc - self.loc
+
+		x = (vec).dot(self.matrix[0])
+		y = (vec).dot(self.matrix[1])
+		z = (vec).dot(self.matrix[2])
+
+		return Vec3([x,y,z])
 
 class Ball(Obj):
-	def __init__(self):
-		super(Ball, self).__init__()
+	def __init__(self, vec = Vec3()):
+		super(Ball, self).__init__(vec)
 
 	def process(self, ball):
 		self.Obj_process(ball.physics)
+		self.matrix = self.rot_to_mat()
 
 class Car(Obj):
-	def __init__(self):
-		super(Car, self).__init__()
-		self.matrix = []
+	def __init__(self, vec = Vec3()):
+		super(Car, self).__init__(vec)
 		self.boost = 0
 
 		self.index = 0
 		self.team = 0
 
-	def to(self, t_loc):
-		return t_loc - self.loc
-
 	def process(self, car):
 		self.Obj_process(car.physics)
 		self.boost = car.boost
-		self.boost = car.team
-		self.boost = car.boost
+		self.team = car.team
 		self.matrix = self.rot_to_mat()
 
 # 	def forward(self):

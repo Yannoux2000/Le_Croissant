@@ -10,7 +10,6 @@ from LeCommon.ConstVec import *
 from States import *
 
 class LeCroissant2(BaseAgent):
-
 	def initialize_agent(self):
 
 		self.me = Car()
@@ -20,51 +19,56 @@ class LeCroissant2(BaseAgent):
 		self.bma = BallMetaArea()
 
 		self.start = 0.0
-
-		self.state = ATBA()
+		self.state = Patrol()
 
 	def preprocess(self,game):
 		self.time = game.game_info.seconds_elapsed
 		self.me.process(game.game_cars[self.index])
 		self.ball.process(game.game_ball)
-		self.bma.update(self.ball.loc, self.team)
+		self.bma.update(self.ball, self.team)
 
 	def print_out(self):
 		# print(self.bma.inShotZone(self.me.loc))
 		pass
 
-	def get_output(self, packet: GameTickPacket) -> SimpleControllerState:		
+	def get_output(self, packet: GameTickPacket) -> SimpleControllerState:
 		self.preprocess(packet)
 		self.render()
 		self.print_out()
 		return self.state.execute(self)
 
-	def controller(self, t_obj,t_vel):
+	def controller(self, t_obj,t_vel, boost, dodge):
 		controller_state = SimpleControllerState()
 
 		t_loc = self.me.to_local(t_obj)
 		t_agl = math.atan2(t_loc[1], t_loc[0])
-		current_speed = self.me.vel.magnitude()
-
+		me_vel = self.me.vel.magnitude()
 		#steering
-		if t_agl > 0.1:
-			controller_state.steer = controller_state.yaw = 1
-		elif t_agl < -0.1:
-			controller_state.steer = controller_state.yaw = -1
-		else:
-			controller_state.steer = controller_state.yaw = 0
-		
+		# if t_agl > 0.1:
+		# 	controller_state.steer = controller_state.yaw = 1
+		# elif t_agl < -0.1:
+		# 	controller_state.steer = controller_state.yaw = -1
+		# else:
+		# 	controller_state.steer = controller_state.yaw = 0
+		controller_state.steer = controller_state.yaw = steer(t_agl)
+
+		delta_t = self.time - self.start
 		#throttle
-		if t_vel > current_speed:
+		if t_vel > me_vel:
 			controller_state.throttle = 1.0
-			if t_vel > 1400 and self.start > 2.2 and current_speed < 2250:
+			if t_vel > 1400 and delta_t > 2.2 and me_vel < 2250 and boost and abs(t_agl) < 1.3:
 				controller_state.boost = True
-		elif t_vel < current_speed:
+		elif t_vel < me_vel:
 			controller_state.throttle = 0
 
-		#dodging
-		delta_t = self.time - self.start
-		if delta_t > 2.2 and (t_obj.distance(self.me)) > 1000 and abs(t_agl) < 1.3:
+		if abs(t_agl) > 1.3:
+			controller_state.handbrake = True
+			controller_state.boost = False
+		else:
+			controller_state.handbrake = False
+
+		# dodging
+		if delta_t > 2.2 and (t_obj.distance(self.me)) > me_vel and abs(t_agl) < 0.6 and dodge:
 			self.start = self.time
 		elif delta_t <= 0.1:
 			controller_state.jump = True
@@ -77,15 +81,21 @@ class LeCroissant2(BaseAgent):
 			controller_state.yaw = controller_state.steer
 			controller_state.pitch = -1
 
+		# self.renderer.begin_rendering()
+		# self.renderer.draw_line_3d(t_obj.loc.vec,self.me.loc.vec, self.renderer.green())
+		# self.renderer.end_rendering()
+
 		return controller_state
 
 	def render(self):
-		self.renderer.clear_screen()
 		self.renderer.begin_rendering()
-		self.renderer.draw_line_3d(self.ball.loc.vec,ConstVec.Pole_L.vec, self.renderer.red())
-		self.renderer.draw_line_3d(self.ball.loc.vec,self.me.loc.vec, self.renderer.blue())
-		self.renderer.draw_line_3d(self.ball.loc.vec,ConstVec.Pole_R.vec, self.renderer.red())
+		# self.renderer.draw_line_3d(self.ball.loc.vec,ConstVec.get('Home_L',self.me.team).vec, self.renderer.red())
+		# self.renderer.draw_line_3d(self.ball.loc.vec,ConstVec.get('Home_R',self.me.team).vec, self.renderer.red())
+		# self.renderer.draw_line_3d(self.ball.loc.vec,self.me.loc.vec, self.renderer.blue())
+		# self.renderer.draw_line_3d(self.ball.loc.vec,self.bma.Home_sideL.vec, self.renderer.blue())
+		# self.renderer.draw_line_3d(self.ball.loc.vec,self.bma.Home_sideR.vec, self.renderer.blue())
 		self.renderer.end_rendering()
+
 
 # class Vector2:
 # 	def __init__(self, x=0, y=0):

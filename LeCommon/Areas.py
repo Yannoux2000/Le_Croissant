@@ -31,6 +31,12 @@ or is he a possible threat (alined with the ball)
 
 """
 
+def inAngle(o_loc, a_loc, t_loc):
+	a_agl = o_loc.angle(a_loc)
+	t_agl = sign(a_agl) * o_loc.angle(t_loc)
+
+	return (a_agl > t_agl)
+
 class BallMetaArea():
 	def __init__(self):
 		self.ball = Vec3()
@@ -38,57 +44,41 @@ class BallMetaArea():
 		self.Goal_sideL = Vec3()
 		self.Goal_sideR = Vec3()
 
-		self.Home_SideL = Vec3()
-		self.Home_SideR = Vec3()
+		self.Home_sideL = Vec3()
+		self.Home_sideR = Vec3()
 
 		self.Wall_L = Vec3()
 		self.Wall_R = Vec3()
 
-
-	def update(self, ball_loc, team):
-		self.ball = ball_loc
+	def update(self, ball, team):
+		self.ball = ball
 
 		Pl = ConstVec.get('Goal_L',team)
 		Pr = ConstVec.get('Goal_R',team)
 
-		self.Goal_sideL = -(Pl - ball_loc)
-		self.Goal_sideR = -(Pr - ball_loc)
+		self.Goal_sideL = - self.ball.to(Pl)
+		self.Goal_sideR = - self.ball.to(Pr)
 
 		Pl = ConstVec.get('Home_L',team)
 		Pr = ConstVec.get('Home_R',team)
 
-		self.Home_sideL = -(Pl - ball_loc)
-		self.Home_sideR = -(Pr - ball_loc)
+		self.Home_sideL = - self.ball.to(Pl)
+		self.Home_sideR = - self.ball.to(Pr)
 
 		Wl = ConstVec.get('Wall_L', team)
+		Wr = ConstVec.get('Wall_R', team)
 
-		self.Wall_sideL = -(Pl - ball_loc)
-		self.Wall_sideR = -(Pr - ball_loc)
+		self.Wall_sideL = - self.ball.to(Wl)
+		self.Wall_sideR = - self.ball.to(Wr)
 
 	def inFrontZone(self, loc):
-		return BallMetaArea.inZone(self.ball, loc, self.Goal_sideL, self.Goal_sideR)
+		return inAngle(loc, self.Goal_sideL, self.Goal_sideR)
 
 	def inShotZone(self, loc):
-		return BallMetaArea.inZone(self.ball, loc, self.Home_sideL, self.Home_sideR)
+		return inAngle(loc, self.Home_sideL, self.Home_sideR)
 
 	# def inShotZone(self, loc):
-	# 	return BallMetaArea.inZone(self.ball, loc, self.Goal_sideL, self.Goal_sideR)
+	# 	return BallMetaArea.inZone(loc, self.Goal_sideL, self.Goal_sideR)
 
 	# def inShotZone(self, loc):
-	# 	return BallMetaArea.inZone(self.ball, loc, self.Goal_sideL, self.Goal_sideR)
-
-	@staticmethod
-	def inZone(ref, loc, pL, pR):
-
-		w1 = pL[0]/pL[1]
-		w2 = pR[0]/pR[1]
-
-		wl = loc[0]/loc[1]
-
-		print(w1, wl ,w2)
-
-		if(w1 > w2) : 
-			return w2 <= wl and wl <= w1
-		else:
-			return w2 >= wl and wl >= w1 
-		# return w1 >= 0 and w2 >= 0
+	# 	return BallMetaArea.inZone(loc, self.Goal_sideL, self.Goal_sideR)

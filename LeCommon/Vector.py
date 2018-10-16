@@ -1,4 +1,5 @@
 import numpy as np
+import math
 
 URotationToRadians = np.pi / float(32768)
 
@@ -16,6 +17,16 @@ def Rad_clip(val):
 		if abs(val) > np.pi:
 			val += (2 * np.pi) if val < 0 else (- 2 * np.pi)
 		return val
+
+def sign(val):
+	return (1) if (val>0) else (-1)
+
+def cap(_val, _min, _max):
+	return max(_min, min(_val, _max))
+
+def steer(angle):
+	final = ((10 * angle+sign(angle))**3) / 20
+	return cap(final,-1,1)
 
 class Vec3:
 	def __init__(self, data = [0,0,0]):
@@ -92,9 +103,9 @@ class Vec3:
 	def np(self,w=1):
 		return np.array([self.vec+[w]])
 
-	# #length calculation
-	# def __abs__(self):
-	# 	return np.sqrt(self.x**2 + self.y**2 + self.z**2)
+	def angle(self, other):
+		diff = other - self
+		return math.atan2(diff[1], diff[0])
 
 	def normalize(self):
 		return self / self.magnitude()
