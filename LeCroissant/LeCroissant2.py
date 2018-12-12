@@ -3,25 +3,27 @@ import math
 from rlbot.agents.base_agent import BaseAgent, SimpleControllerState
 from rlbot.utils.structures.game_data_struct import GameTickPacket
 
-from LeCommon.Objs import *
-from LeCommon.Areas import *
-from LeCommon.Vector import *
-from LeCommon.ConstVec import *
+from LeFramework.common.Objs import *
+from LeFramework.common.Areas import *
+from LeFramework.common.Vector import *
+from LeFramework.common.ConstVec import *
 from States import *
+from Controllers import *
 
 class LeCroissant2(BaseAgent):
 	def initialize_agent(self):
-
-		self.me = Car()
+		self.me = Car(self.index)
 		self.ball = Ball()
 		#This runs once before the bot starts up
 		self.controller_state = SimpleControllerState()
 		self.bma = BallMetaArea()
 
 		self.start = 0.0
-		self.state = Patrol()
+		self.state = RandPatrol()
+		self.controller = controller
 
 	def preprocess(self,game):
+		# print(game)
 		self.time = game.game_info.seconds_elapsed
 		self.me.process(game.game_cars[self.index])
 		self.ball.process(game.game_ball)
@@ -36,56 +38,6 @@ class LeCroissant2(BaseAgent):
 		self.render()
 		self.print_out()
 		return self.state.execute(self)
-
-	def controller(self, t_obj,t_vel, boost, dodge):
-		controller_state = SimpleControllerState()
-
-		t_loc = self.me.to_local(t_obj)
-		t_agl = math.atan2(t_loc[1], t_loc[0])
-		me_vel = self.me.vel.magnitude()
-		#steering
-		# if t_agl > 0.1:
-		# 	controller_state.steer = controller_state.yaw = 1
-		# elif t_agl < -0.1:
-		# 	controller_state.steer = controller_state.yaw = -1
-		# else:
-		# 	controller_state.steer = controller_state.yaw = 0
-		controller_state.steer = controller_state.yaw = steer(t_agl)
-
-		delta_t = self.time - self.start
-		#throttle
-		if t_vel > me_vel:
-			controller_state.throttle = 1.0
-			if t_vel > 1400 and delta_t > 2.2 and me_vel < 2250 and boost and abs(t_agl) < 1.3:
-				controller_state.boost = True
-		elif t_vel < me_vel:
-			controller_state.throttle = 0
-
-		if abs(t_agl) > 1.3:
-			controller_state.handbrake = True
-			controller_state.boost = False
-		else:
-			controller_state.handbrake = False
-
-		# dodging
-		if delta_t > 2.2 and (t_obj.distance(self.me)) > me_vel and abs(t_agl) < 0.6 and dodge:
-			self.start = self.time
-		elif delta_t <= 0.1:
-			controller_state.jump = True
-			controller_state.pitch = -1
-		elif delta_t >= 0.1 and delta_t <= 0.15:
-			controller_state.jump = False
-			controller_state.pitch = -1
-		elif delta_t > 0.15 and delta_t < 1:
-			controller_state.jump = True
-			controller_state.yaw = controller_state.steer
-			controller_state.pitch = -1
-
-		# self.renderer.begin_rendering()
-		# self.renderer.draw_line_3d(t_obj.loc.vec,self.me.loc.vec, self.renderer.green())
-		# self.renderer.end_rendering()
-
-		return controller_state
 
 	def render(self):
 		self.renderer.begin_rendering()
