@@ -6,27 +6,27 @@ Welcome to Le Croissant's Repo, one of the few bots in the RLBot Community, that
 
 To install and run Le Croissant, you will need :
 
-	- [RLBot](https://github.com/RLBot/RLBot), because it is useless without an environment.
+- [RLBot](https://github.com/RLBot/RLBot), because it is useless without an environment.
 
 Conciderer checking out the RLBot repository, to fully understand the designing behind this bot.
 
 # Ideas and Todo list:
 
-	**Todo :**
+**Todo :**
 
-	+ Update to V4
-	+ Implement Strategy
-	+ Debunk AirControls
++ Update to V4
++ Implement Strategy
++ Debunk AirControls
 
-	**Ideas :**
+**Ideas :**
 
-	+ tests, as in training, in external env.
-	+ external env.
-	+ meta plays.
-	+ defending plays.
-	+ adaptation with other bots behaviours.
-	+ faking first shot.
-	+ ...
++ tests, as in training, in external env.
++ external env.
++ meta plays.
++ defending plays.
++ adaptation with other bots behaviours.
++ faking first shot.
++ ...
 
 # RLBot :
 
